@@ -39,7 +39,9 @@ app.get("/refresh-page", async (req, res) => {
   }
 
   io.emit(EVENT.REFRESH_PAGE, { pathname });
-  res.status(200).json({ pathname });
+  res.status(200).json({
+    message: `Event "${EVENT.REFRESH_PAGE}" dispatched for the pathname: ${pathname}`,
+  });
 });
 
 io.on("connection", (socket) => {
@@ -54,6 +56,6 @@ io.on("connection", (socket) => {
   });
 });
 
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
 });
