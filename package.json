@@ -9,23 +9,14 @@
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\""
   },
   "dependencies": {
-    "cookie-parser": "^1.4.6",
-    "cors": "^2.8.5",
     "dotenv": "^16.3.1",
-    "express": "^4.18.2",
-    "morgan": "^1.10.0",
-    "socket.io": "^4.7.2"
+    "sharp": "^0.33.2"
   },
   "devDependencies": {
-    "@types/express": "^4.17.20",
-    "@types/morgan": "^1.9.7",
     "@types/node": "^20.8.7",
     "concurrently": "^8.2.2",
     "prettier": "^3.0.3",
     "typescript": "^5.2.2"
   },
-  "optionalDependencies": {
-    "bufferutil": "^4.0.8",
-    "utf-8-validate": "^6.0.3"
-  }
+  "optionalDependencies": {}
 }

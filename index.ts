@@ -1,61 +1,29 @@
-import express, { Express, Request, Response } from "express";
-import { createServer } from "http";
-import { Server } from "socket.io";
-import logger from "morgan";
-import cors from "cors";
+import sharp from "sharp";
 import dotenv from "dotenv";
-
-export const EVENT = {
-  REFRESH_PAGE: "refresh_page",
-};
-
 dotenv.config();
 
-const app: Express = express();
-const server = createServer(app);
-export const io = new Server(server, {
-  transports: ["polling"],
-  cors: {
-    origin: "*",
-  },
-});
+const handleError = (error: unknown) => {
+  return error instanceof Error
+    ? error.message
+    : ((error as any).toString() as string);
+};
 
-const port = process.env.PORT;
+const getQuote = async (endpoint: string) => {
+  try {
+    const res = await fetch(`${process.env.ZEN_QUOTES_API}/${endpoint}`);
+    if (!res.ok) {
+      throw new Error(res.statusText);
+    }
 
-app.use(cors());
-app.use(logger("dev"));
-app.use(express.json(), express.urlencoded({ extended: false }));
-
-app.get("/", (req: Request, res: Response) => {
-  res.status(200).send("Express + Socket IO Server");
-});
-
-app.get("/refresh-page", async (req, res) => {
-  const { pathname } = req.query;
-  if (!pathname) {
-    res.statusMessage = "pathname query missing";
-    res.status(400).send("pathname query missing");
-    return;
+    const data = await res.json();
+    return [data, null];
+  } catch (error) {
+    return [null, handleError(error)];
   }
+};
 
-  io.emit(EVENT.REFRESH_PAGE, { pathname });
-  res.status(200).json({
-    message: `Event "${EVENT.REFRESH_PAGE}" dispatched for the pathname: ${pathname}`,
-  });
-});
+const getRandomQuote = () => getQuote("random");
 
-io.on("connection", (socket) => {
-  console.log("A user is connected");
-
-  socket.on("message", (message) => {
-    console.log(`message from ${socket.id} : ${message}`);
-  });
-
-  socket.on("disconnect", () => {
-    console.log(`socket ${socket.id} disconnected`);
-  });
-});
-
-server.listen(port, () => {
-  console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
-});
+// getRandomQuote().then(([res, error]) => {
+//   console.log({ res, error });
+// });
